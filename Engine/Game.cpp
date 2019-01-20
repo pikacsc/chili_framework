@@ -206,6 +206,7 @@ void Game::ResetGame()
 	mLevelScreenGap = 50;
 	mPooCount = 3;
 	mPooVector.resize(mPooCount);
+	mPooSpeed = 2;
 	for (int i = 0; i < mPooCount; i++)
 	{
 		mPooVector[i].IsActive = true;

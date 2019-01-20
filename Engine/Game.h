@@ -61,7 +61,7 @@ private:
 	int					mScreenWidth = 750;
 	int					mScreenHeight = 550;
 	int					mLevelScreenGap = 50;
-	int					mPooSpeed = 1;
+	int					mPooSpeed = 2;
 
 };
 
