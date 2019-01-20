@@ -32,6 +32,23 @@ public:
 	Game( const Game& ) = delete;
 	Game& operator=( const Game& ) = delete;
 	void Go();
+
+	
+	bool BoundaryCheck(const int &, const int &);
+	bool BoundaryCheck(Cursor &);
+	void MovingCursor(const MainWindow &, const int &);
+	void drawLine(int, int, int, int, Graphics &, Color);
+	void drawLine(const LINE &, Graphics &, Color);
+	void drawCursor(CURSOR &, Graphics &, Color);
+	void drawCursor(Graphics &, const int &, const int &, Color, int, int);
+	void drawTargetingBox(Graphics &, const int &, const int &, Color, int, int);
+	void drawTargetingBox(Graphics &, targetingBox &, Color);
+	bool IsPointToRectCollide(const iRECT &, const Position &);
+	bool IsCursorCollideTBox(const CURSOR &, const targetingBox &);
+	int	 ClampScreenX(const int&);
+	int	 ClampScreenY(const int&);
+
+
 private:
 	void ComposeFrame();
 	void UpdateModel();
@@ -45,4 +62,9 @@ private:
 	/*  User Variables              */
 	/********************************/
 
+	POS		mCurrentPosition;
+	CURSOR	mCursor;
+	int		mCursorSpeed = 1;
+
 };
+

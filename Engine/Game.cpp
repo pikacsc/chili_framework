@@ -40,116 +40,127 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
+	MovingCursor(wnd, mCursorSpeed);
 }
 
 
 
 
 
-bool BoundaryCheck(const int& _x, const int& _y)
+inline bool Game::BoundaryCheck(const int& _x, const int& _y)
 {
-	if (_x < 0)
-		return false;
-	if (800 < _x)
-		return false;
-	if (_y < 0)
-		return false;
-	if (600 < _y)
-		return false;
-	return true;
+	return (_x > 0) && (800 > _x) && (_y > 0) && (600 > _y);
+}
+
+inline bool Game::BoundaryCheck(Cursor& _cursor)
+{
+	return (_cursor.left.x1 > 0) && (800 > _cursor.right.x2) && (_cursor.top.y2 > 0) && (600 > _cursor.bottom.y2);
 }
 
 
-POS		currentPosition;
-CURSOR	Cursor;
-int		Speed = 1;
 
-
-void MovingCursor(const MainWindow& wnd, const int& amount)
+void Game::MovingCursor(const MainWindow& wnd, const int& amount)
 {
+	
 	if (wnd.kbd.KeyIsPressed(VK_UP))
 	{
-		currentPosition.y -= amount;
+		mCurrentPosition.y -= amount;
 	}
 	if (wnd.kbd.KeyIsPressed(VK_DOWN))
 	{
-		currentPosition.y += amount;
+		mCurrentPosition.y += amount;
 	}
 	if (wnd.kbd.KeyIsPressed(VK_LEFT))
 	{
-		currentPosition.x -= amount;
+		mCurrentPosition.x -= amount;
 	}
 	if (wnd.kbd.KeyIsPressed(VK_RIGHT))
 	{
-		currentPosition.x += amount;
+		mCurrentPosition.x += amount;
 	}
+
+	mCurrentPosition.x = ClampScreenX(mCurrentPosition.x);
+	mCurrentPosition.y = ClampScreenY(mCurrentPosition.y);
+
+
+	if (wnd.kbd.KeyIsPressed(VK_SPACE))
+		drawTargetingBox(gfx, mCurrentPosition.x, mCurrentPosition.y, Colors::Red, 5, 5);
+	if (wnd.kbd.KeyIsPressed(VK_ADD) && mCursorSpeed < 5)
+		mCursorSpeed += 1;
+	if (wnd.kbd.KeyIsPressed(VK_SUBTRACT) && mCursorSpeed > 0)
+		mCursorSpeed -= 1;
+	
 }
 
-void drawLine(int _iX1, int _iY1, int _iX2, int _iY2, Graphics& _gfx, Color _color = Colors::LightGray)
+void Game::drawLine(int _iX1, int _iY1, int _iX2, int _iY2, Graphics& _gfx, Color _color = Colors::LightGray)
 {
-	BoundaryCheck(_iX1, _iY1);
-	BoundaryCheck(_iX2, _iY2);
+	if (BoundaryCheck(_iX1, _iY1) && BoundaryCheck(_iX2, _iY2))
+	{
+		if (_iX1 > _iX2)
+		{
+			int temp = _iX1;
+			_iX1 = _iX2;
+			_iX2 = temp;
+		}
+		if (_iY1 > _iY2)
+		{
+			int temp = _iY1;
+			_iY1 = _iY2;
+			_iY2 = temp;
+		}
 
-	if (_iX1 > _iX2)
-	{
-		int temp = _iX1;
-		_iX1 = _iX2;
-		_iX2 = temp;
-	}
-	if (_iY1 > _iY2)
-	{
-		int temp = _iY1;
-		_iY1 = _iY2;
-		_iY2 = temp;
-	}
-
-	while (_iX1 <= _iX2 && _iY1 <= _iY2)
-	{
-		_gfx.PutPixel(_iX1, _iY1, _color);
-		if (_iX1 == _iX2 && _iY1 == _iY2)
-			break;
-		if (_iX1 < _iX2)
-			_iX1++;
-		if (_iY1 < _iY2)
-			_iY1++;
+		while (_iX1 <= _iX2 && _iY1 <= _iY2)
+		{
+			_gfx.PutPixel(_iX1, _iY1, _color);
+			if (_iX1 == _iX2 && _iY1 == _iY2)
+				break;
+			if (_iX1 < _iX2)
+				_iX1++;
+			if (_iY1 < _iY2)
+				_iY1++;
+		}
 	}
 }
 
 
 
-void drawLine(const LINE& _line, Graphics& _gfx, Color _color = Colors::LightGray)
+void Game::drawLine(const LINE& _line, Graphics& _gfx, Color _color = Colors::LightGray)
 {
 	int iX1 = _line.x1;
 	int iY1 = _line.y1;
 	int iX2 = _line.x2;
 	int iY2 = _line.y2;
-	if (iX1 > iX2)
+	if (BoundaryCheck(iX1, iY1) && BoundaryCheck(iX2, iY2))
 	{
-		int temp = iX1;
-		iX1 = iX2;
-		iX2 = temp;
-	}
-	if (iY1 > iY2)
-	{
-		int temp = iY1;
-		iY1 = iY2;
-		iY2 = temp;
+		if (iX1 > iX2)
+		{
+			int temp = iX1;
+			iX1 = iX2;
+			iX2 = temp;
+		}
+		if (iY1 > iY2)
+		{
+			int temp = iY1;
+			iY1 = iY2;
+			iY2 = temp;
+		}
+
+		while (iX1 <= iX2 && iY1 <= iY2)
+		{
+			_gfx.PutPixel(iX1, iY1, _color);
+			if (iX1 == iX2 && iY1 == iY2)
+				break;
+			if (iX1 < iX2)
+				iX1++;
+			if (iY1 < iY2)
+				iY1++;
+		}
 	}
 
-	while (iX1 <= iX2 && iY1 <= iY2)
-	{
-		_gfx.PutPixel(iX1, iY1, _color);
-		if (iX1 == iX2 && iY1 == iY2)
-			break;
-		if (iX1 < iX2)
-			iX1++;
-		if (iY1 < iY2)
-			iY1++;
-	}
 
 }
 
-void drawCursor(CURSOR& _cursor, Graphics& _gfx, Color _color = Colors::LightGray)
+void Game::drawCursor(CURSOR& _cursor, Graphics& _gfx, Color _color = Colors::LightGray)
 {
 	drawLine(_cursor.left.x1, _cursor.left.y1, _cursor.left.x2, _cursor.left.y2, _gfx, _color);
 	drawLine(_cursor.top.x1, _cursor.top.y1, _cursor.top.x2, _cursor.top.y2, _gfx, _color);
@@ -158,7 +169,7 @@ void drawCursor(CURSOR& _cursor, Graphics& _gfx, Color _color = Colors::LightGra
 }
 
 
-void drawCursor(Graphics& _gfx, const int& _x, const int& _y, Color _color = Colors::LightGray, int _lineGap = 10, int _lineLength = 10)
+void Game::drawCursor(Graphics& _gfx, const int& _x, const int& _y, Color _color = Colors::LightGray, int _lineGap = 10, int _lineLength = 10)
 {
 	CURSOR cursor = { _x,_y,_lineGap,_lineLength };
 	drawLine(cursor.left, _gfx, _color);
@@ -169,7 +180,7 @@ void drawCursor(Graphics& _gfx, const int& _x, const int& _y, Color _color = Col
 
 
 
-void drawTargetingBox(Graphics& _gfx, const int& _x, const int& _y, Color _color = Colors::LightGray, int _lineGap = 10, int _lineLength = 10)
+void Game::drawTargetingBox(Graphics& _gfx, const int& _x, const int& _y, Color _color = Colors::LightGray, int _lineGap = 10, int _lineLength = 10)
 {
 	targetingBox tBox = { _x,_y,_lineGap,_lineLength };
 
@@ -184,7 +195,7 @@ void drawTargetingBox(Graphics& _gfx, const int& _x, const int& _y, Color _color
 }
 
 
-void drawTargetingBox(Graphics& _gfx, targetingBox& _tBox, Color _color = Colors::LightGray)
+void Game::drawTargetingBox(Graphics& _gfx, targetingBox& _tBox, Color _color = Colors::LightGray)
 {
 	drawLine(_tBox.LeftTop_x, _gfx, _color);
 	drawLine(_tBox.LeftTop_y, _gfx, _color);
@@ -196,12 +207,12 @@ void drawTargetingBox(Graphics& _gfx, targetingBox& _tBox, Color _color = Colors
 	drawLine(_tBox.RightBottom_y, _gfx, _color);
 }
 
-inline bool IsPointToRectCollide(const iRECT& _rect, const Position& _pos) {
+inline bool Game::IsPointToRectCollide(const iRECT& _rect, const Position& _pos) {
 	return (_rect.left.x1 <= _pos.x) && (_pos.x <= _rect.right.x2) && (_rect.top.y1 <= _pos.y) && (_pos.y <= _rect.bottom.y2);
 }
 
 
-bool IsCursorCollideTBox(const CURSOR& _cursor,const targetingBox& _tBox)
+bool Game::IsCursorCollideTBox(const CURSOR& _cursor,const targetingBox& _tBox)
 {
 	//Define area to detect collide
 	POS LeftTopCorner		= { _tBox.LeftTop_x.x1,_tBox.LeftTop_y.y1 };
@@ -222,39 +233,59 @@ bool IsCursorCollideTBox(const CURSOR& _cursor,const targetingBox& _tBox)
 	POS _cursorRight	= { _cursor.right.x2,_cursor.right.y1 };
 	POS _cursorBottom	= { _cursor.bottom.x1,_cursor.bottom.y2 };
 
+	return IsPointToRectCollide(rect, _cursorLeft) || IsPointToRectCollide(rect, _cursorTop) || IsPointToRectCollide(rect, _cursorRight) || IsPointToRectCollide(rect, _cursorBottom);
+}
 
-	if (IsPointToRectCollide(rect, _cursorLeft))
-		return true;
-	if (IsPointToRectCollide(rect, _cursorTop))
-		return true;
-	if (IsPointToRectCollide(rect, _cursorRight))
-		return true;
-	if (IsPointToRectCollide(rect, _cursorBottom))
-		return true;
-	return false;
+int Game::ClampScreenX(const int & _x)
+{
+	const int left = _x - 5;
+	const int right = _x + 5;
+	if (left < 0)
+		return 5;
+	else if (right >= gfx.ScreenWidth)
+		return gfx.ScreenWidth - 6;
+	else
+		return _x;
+}
+
+int Game::ClampScreenY(const int & _y)
+{
+	const int Top = _y - 5;
+	const int Bottom = _y + 5;
+	if (Top < 0)
+		return 5;
+	else if (Bottom >= gfx.ScreenHeight)
+		return gfx.ScreenHeight - 6;
+	else
+		return _y;
 }
 
 
 void Game::ComposeFrame()
 {
 
-
-	targetingBox YellowBox = { 300,300, 10,10 };
-	CURSOR cursor = { currentPosition.x, currentPosition.y, 5,5 };
-
-
-	if (wnd.kbd.KeyIsPressed(VK_SPACE))
-		drawTargetingBox(gfx, currentPosition.x, currentPosition.y, Colors::Red, 5, 5);
-	if (wnd.kbd.KeyIsPressed(VK_ADD) && Speed < 5)
-		Speed += 1;
-	if (wnd.kbd.KeyIsPressed(VK_SUBTRACT) && Speed > 0)	
-		Speed -= 1;
-	if (IsCursorCollideTBox(cursor,YellowBox))
-		drawCursor(gfx, currentPosition.x, currentPosition.y,Colors::Red);
-	else
-		drawCursor(gfx, currentPosition.x, currentPosition.y);
-	drawTargetingBox(gfx,YellowBox, Colors::Yellow);
+	targetingBox RedBox = { 300,300, 10,10 };
+	drawTargetingBox(gfx,RedBox, Colors::Red);
 	
-	MovingCursor(wnd, Speed);
-	gfx.PutPixel(currentPosition.x, currentPosition.y, Colors::Red);
+	
+	targetingBox GreenBox = { 450,450, 10,10 };
+	drawTargetingBox(gfx, GreenBox, Colors::Green);
+
+
+	targetingBox BlueBox = { 150,200, 10,10 };
+	drawTargetingBox(gfx, BlueBox, Colors::Blue);
+
+
+	mCursor = { mCurrentPosition.x, mCurrentPosition.y, 5,5 };
+
+	if (IsCursorCollideTBox(mCursor, GreenBox))
+		drawCursor(gfx, mCurrentPosition.x, mCurrentPosition.y, Colors::Green);
+	if (IsCursorCollideTBox(mCursor, RedBox))
+		drawCursor(gfx, mCurrentPosition.x, mCurrentPosition.y, Colors::Red);
+	/*if (IsCursorCollideTBox(cursor, BlueBox))
+		drawCursor(gfx, mCurrentPosition.x, mCurrentPosition.y, Colors::Blue);*/
+	else
+		drawCursor(gfx, mCurrentPosition.x, mCurrentPosition.y);
+	
+	gfx.PutPixel(mCurrentPosition.x, mCurrentPosition.y, Colors::Red);
 }
