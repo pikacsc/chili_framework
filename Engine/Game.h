@@ -23,7 +23,8 @@
 #include "Keyboard.h"
 #include "Mouse.h"
 #include "Graphics.h"
-
+#include "JasonChoi_structs.h"
+#include <vector>
 class Game
 {
 public:
@@ -37,10 +38,28 @@ private:
 	/********************************/
 	/*  User Functions              */
 	/********************************/
+	void MovingDude();
+	void EattingPoo();
+	void RenewPooVector();
+	bool IsGameClear();
+	bool IsGameOver();
+	int  GetRandomNumber(const int&, const int&);
+	void ResetGame();
+	
 private:
 	MainWindow& wnd;
 	Graphics gfx;
 	/********************************/
 	/*  User Variables              */
 	/********************************/
+	std::vector<POO>	mPooVector;
+	DUDE				mDude;
+	int					mPooCount = 3;
+	int					mScore = 0;
+	int					mScreenWidth = 750;
+	int					mScreenHeight = 550;
+	int					mLevelScreenGap = 50;
+
+
 };
+
