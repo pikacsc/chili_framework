@@ -39,10 +39,12 @@ private:
 	/*  User Functions              */
 	/********************************/
 	void MovingDude();
+	void MovingPoo();
 	void EattingPoo();
 	void RenewPooVector();
 	bool IsGameClear();
 	bool IsGameOver();
+	bool IsPooCollideEdge(const POO&);
 	int  GetRandomNumber(const int&, const int&);
 	void ResetGame();
 	
@@ -59,7 +61,7 @@ private:
 	int					mScreenWidth = 750;
 	int					mScreenHeight = 550;
 	int					mLevelScreenGap = 50;
-
+	int					mPooSpeed = 1;
 
 };
 

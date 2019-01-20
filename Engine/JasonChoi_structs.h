@@ -1,9 +1,21 @@
 #pragma once
+
+enum MOVE_DIR
+{
+	eLEFT_TOP = 1,
+	eLEFT_BOTTOM = 2,
+	eRIGHT_TOP = 3,
+	eRIGHT_BOTTOM = 4
+};
+
+
+
 typedef struct _tagPoo
 {
-	int x;
-	int y;
-	bool IsActive = true;
+	int			x;
+	int			y;
+	bool		IsActive = true;
+	int			eDir;
 } POO;
 
 typedef struct _tagDude

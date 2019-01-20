@@ -23,6 +23,8 @@
 #include "DrawingObjects.h"
 #include <random>
 
+
+
 Game::Game( MainWindow& wnd )
 	:
 	wnd( wnd ),
@@ -34,7 +36,8 @@ Game::Game( MainWindow& wnd )
 	//PooInitialize
 	for (int i = 0; i < mPooCount; i++)
 	{
-		POO newPoo = { GetRandomNumber(mLevelScreenGap,mScreenWidth),GetRandomNumber(mLevelScreenGap,mScreenHeight),true};
+		int eDir = GetRandomNumber(MOVE_DIR::eLEFT_TOP, MOVE_DIR::eRIGHT_BOTTOM);
+		POO newPoo = { GetRandomNumber(mLevelScreenGap,mScreenWidth),GetRandomNumber(mLevelScreenGap,mScreenHeight),true,eDir};
 		mPooVector.push_back(newPoo);
 	}
 
@@ -80,6 +83,49 @@ void Game::MovingDude()
 		ResetGame();
 }
 
+void Game::MovingPoo()
+{
+	for (int i = 0; i < mPooCount; i++)
+	{
+		if (mPooVector[i].eDir == eLEFT_BOTTOM)
+		{
+			mPooVector[i].x -= mPooSpeed;
+			mPooVector[i].y += mPooSpeed;
+			if (IsPooCollideEdge(mPooVector[i]))
+			{
+				mPooVector[i].eDir = eLEFT_TOP;
+			}
+		}
+		if (mPooVector[i].eDir == eLEFT_TOP)
+		{
+			mPooVector[i].x -= mPooSpeed;
+			mPooVector[i].y -= mPooSpeed;
+			if (IsPooCollideEdge(mPooVector[i]))
+			{
+				mPooVector[i].eDir = eRIGHT_TOP;
+			}
+		}
+		if (mPooVector[i].eDir == eRIGHT_BOTTOM)
+		{
+			mPooVector[i].x += mPooSpeed;
+			mPooVector[i].y += mPooSpeed;
+			if (IsPooCollideEdge(mPooVector[i]))
+			{
+				mPooVector[i].eDir = eLEFT_BOTTOM;
+			}
+		}
+		if (mPooVector[i].eDir == eRIGHT_TOP)
+		{
+			mPooVector[i].x += mPooSpeed;
+			mPooVector[i].y -= mPooSpeed;
+			if (IsPooCollideEdge(mPooVector[i]))
+			{
+				mPooVector[i].eDir = eRIGHT_BOTTOM;
+			}
+		}
+	}
+}
+
 void Game::EattingPoo()
 {
 	const int gap = 15;
@@ -95,11 +141,13 @@ void Game::EattingPoo()
 void Game::RenewPooVector()
 {
 	mLevelScreenGap += 10;
+	mPooSpeed += 3;
 	mScreenWidth -= mLevelScreenGap;
 	mScreenHeight -= mLevelScreenGap;
 	for (int i = 0; i < mPooCount; i++)
 	{
-		POO newPoo = { GetRandomNumber(mLevelScreenGap,mScreenWidth-50),GetRandomNumber(mLevelScreenGap,mScreenHeight-50),true };
+		int eDir = GetRandomNumber(MOVE_DIR::eLEFT_TOP, MOVE_DIR::eRIGHT_BOTTOM);
+		POO newPoo = { GetRandomNumber(mLevelScreenGap,mScreenWidth-50),GetRandomNumber(mLevelScreenGap,mScreenHeight-50),true,eDir };
 		mPooVector.push_back(newPoo);
 	}
 	mPooCount += mPooCount;
@@ -129,6 +177,11 @@ bool Game::IsGameClear()
 bool Game::IsGameOver()
 {
 	return  mDude.x < mLevelScreenGap || mDude.x > mScreenWidth || mDude.y < mLevelScreenGap || mDude.y > mScreenHeight;
+}
+
+bool Game::IsPooCollideEdge(const POO& _poo)
+{
+	return _poo.x < mLevelScreenGap || _poo.x > mScreenWidth || _poo.y > mScreenHeight || _poo.y < mLevelScreenGap;
 }
 
 
@@ -166,6 +219,7 @@ void Game::ResetGame()
 void Game::ComposeFrame()
 {
 	MovingDude();
+	MovingPoo();
 	EattingPoo();
 	if (IsGameClear())
 	{
