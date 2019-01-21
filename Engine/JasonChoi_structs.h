@@ -9,14 +9,25 @@ enum MOVE_DIR
 };
 
 
+typedef struct _tagSquare
+{
+	int		x;
+	int		y;
+	int		r;
+	int		g;
+	int		b;
+	bool	IsActive = true;
+} SQUARE;
+
 
 typedef struct _tagPoo
 {
-	int			x;
-	int			y;
-	bool		IsActive = true;
-	int			eDir;
+	int		x;
+	int		y;
+	bool	IsActive = true;
+	int		eDir;
 } POO;
+
 
 typedef struct _tagDude
 {

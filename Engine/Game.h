@@ -56,12 +56,14 @@ private:
 	/********************************/
 	std::vector<POO>	mPooVector;
 	DUDE				mDude;
+	SQUARE				mSquare;
 	int					mPooCount = 3;
 	int					mScore = 0;
 	int					mScreenWidth = 750;
 	int					mScreenHeight = 550;
 	int					mLevelScreenGap = 50;
 	int					mPooSpeed = 2;
+	int					mDudeLife = 200;
 
 };
 

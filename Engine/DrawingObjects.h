@@ -2681,3 +2681,55 @@ void DrawWall(const int & _width, const int& _height, Graphics& _gfx)
 	}
 
 }
+
+
+
+void DrawLifeBar(const int & _width, Graphics& _gfx)
+{
+	int Width = _width;
+	int Height = 25;
+	int leftGap = 50;
+	int topGap = 50;
+	int rightGap = _width - leftGap;
+	int bottomGap = topGap + Height;
+
+	for (int x = leftGap; x < rightGap; x++)
+	{
+		for (int y = topGap; y < bottomGap; y++)
+		{
+			_gfx.PutPixel(x, y, Colors::Red);
+		}
+	}
+}
+
+
+
+
+void DrawGlowingSquare(SQUARE& _square, Graphics& _gfx)
+{
+	
+	int Width = 25;
+	int Height = 25;
+	int rightGap = _square.x + Width;
+	int bottomGap = _square.y + Height;
+	
+	for (int x = _square.x; x < rightGap; x++)
+	{
+		for (int y = _square.y; y < bottomGap; y++)
+		{
+			_gfx.PutPixel(x, y, _square.r,_square.g,_square.b);
+			if (_square.r == 250)
+			{
+				_square.r = 1;
+				_square.g = 1;
+				_square.b = 1;
+			}
+			else
+			{
+				_square.r += 1;
+				_square.g += 1;
+				_square.b += 1;
+			}
+		}
+	}
+}

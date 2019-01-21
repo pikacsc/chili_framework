@@ -31,7 +31,9 @@ Game::Game( MainWindow& wnd )
 	gfx( wnd )
 {
 	mDude = { 400,300 };
-
+	
+	mSquare = { GetRandomNumber(mLevelScreenGap,mScreenWidth),GetRandomNumber(mLevelScreenGap,mScreenHeight) };
+	
 
 	//PooInitialize
 	for (int i = 0; i < mPooCount; i++)
@@ -61,6 +63,8 @@ void Game::UpdateModel()
 	{
 		DrawWall(mScreenWidth, mScreenHeight,gfx);
 		DrawDude(mDude, gfx);
+		DrawGlowingSquare(mSquare, gfx);
+		DrawLifeBar(mDudeLife, gfx);
 		for (int i = 0; i < mPooCount; i++)
 		{
 			if (mPooVector[i].IsActive == true)
@@ -79,7 +83,7 @@ void Game::MovingDude()
 		mDude.x -= mDude.speed;
 	if (wnd.kbd.KeyIsPressed(VK_RIGHT))
 		mDude.x += mDude.speed;
-	if (wnd.kbd.KeyIsPressed(VK_SPACE))
+	if (wnd.kbd.KeyIsPressed(VK_SPACE) && IsGameOver())
 		ResetGame();
 }
 
@@ -133,10 +137,16 @@ void Game::EattingPoo()
 	{
 		if (mPooVector[i].x + gap > mDude.x && mPooVector[i].x - gap < mDude.x && mPooVector[i].y - gap < mDude.y && mPooVector[i].y + gap > mDude.y)
 		{
-			mPooVector[i].IsActive = false;
+			//mPooVector[i].IsActive = false; //eating poo Game
+			mDudeLife -= 100;
+			break;
 		}
 	}
 }
+
+
+
+
 
 void Game::RenewPooVector()
 {
@@ -144,6 +154,7 @@ void Game::RenewPooVector()
 	mPooSpeed += 3;
 	mScreenWidth -= mLevelScreenGap;
 	mScreenHeight -= mLevelScreenGap;
+
 	for (int i = 0; i < mPooCount; i++)
 	{
 		int eDir = GetRandomNumber(MOVE_DIR::eLEFT_TOP, MOVE_DIR::eRIGHT_BOTTOM);
@@ -159,11 +170,14 @@ void Game::RenewPooVector()
 	}
 	mDude.x = 400;
 	mDude.y = 300;
+	mSquare.x = GetRandomNumber(mLevelScreenGap, mScreenWidth);
+	mSquare.y = GetRandomNumber(mLevelScreenGap, mScreenHeight);
 }
 
 bool Game::IsGameClear()
 {
-	int deadPooCount = 0;
+	//Eatting Poo game
+	/*int deadPooCount = 0;
 	for (int i = 0; i < mPooCount; i++)
 	{
 		if (mPooVector[i].IsActive == false)
@@ -171,12 +185,16 @@ bool Game::IsGameClear()
 			deadPooCount++;
 		}
 	}
-	return (deadPooCount == mPooCount);
+	return (deadPooCount == mPooCount)*/;
+
+	//Avoid Poo and eatting square game
+	const int gap = 15;
+	return  (mSquare.x + gap > mDude.x && mSquare.x - gap < mDude.x && mSquare.y - gap < mDude.y && mSquare.y + gap > mDude.y);
 }
 
 bool Game::IsGameOver()
 {
-	return  mDude.x < mLevelScreenGap || mDude.x > mScreenWidth || mDude.y < mLevelScreenGap || mDude.y > mScreenHeight;
+	return  mDude.x < mLevelScreenGap || mDude.x > mScreenWidth || mDude.y < mLevelScreenGap || mDude.y > mScreenHeight || mDudeLife <= 0;
 }
 
 bool Game::IsPooCollideEdge(const POO& _poo)
@@ -201,12 +219,16 @@ void Game::ResetGame()
 	mDude.x = 400;
 	mDude.y = 300;
 	mDude.speed = 1;
+	mDudeLife = 200;
 	mScreenWidth = 750;
 	mScreenHeight = 550;
 	mLevelScreenGap = 50;
 	mPooCount = 3;
 	mPooVector.resize(mPooCount);
 	mPooSpeed = 2;
+	mSquare.x = GetRandomNumber(mLevelScreenGap, mScreenWidth);
+	mSquare.y = GetRandomNumber(mLevelScreenGap, mScreenHeight);
+
 	for (int i = 0; i < mPooCount; i++)
 	{
 		mPooVector[i].IsActive = true;
