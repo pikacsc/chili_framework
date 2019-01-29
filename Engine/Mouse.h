@@ -28,7 +28,7 @@ public:
 	class Event
 	{
 	public:
-		enum class Type
+		enum Type
 		{
 			LPress,
 			LRelease,
@@ -48,7 +48,7 @@ public:
 	public:
 		Event()
 			:
-			type( Type::Invalid ),
+			type( Invalid ),
 			leftIsPressed( false ),
 			rightIsPressed( false ),
 			x( 0 ),
@@ -64,7 +64,7 @@ public:
 		{}
 		bool IsValid() const
 		{
-			return type != Type::Invalid;
+			return type != Invalid;
 		}
 		Type GetType() const
 		{
