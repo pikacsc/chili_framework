@@ -1,5 +1,23 @@
 #include "SpriteCodex.h"
 
+
+void SpriteCodex::DrawBorder(Board & _brd, Graphics& _gfx)
+{
+	int border = 2;
+	int width = 500;
+	int height = 500;
+	for (int x = 0; x < width; x++)
+	{
+		for (int y = 0; y < height; y++)
+		{
+			if (border < x && border < y && y < width - border && x < height - border )
+				continue;
+			_gfx.PutPixel(x, y, Colors::Magenta);
+		}
+	}
+}
+
+
 void SpriteCodex::DrawGameOver( int x,int y,Graphics& gfx )
 {
 	gfx.PutPixel( 49 + x,0 + y,0,146,14 );

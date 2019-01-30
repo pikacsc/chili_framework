@@ -94,6 +94,7 @@ void Game::ComposeFrame()
 {
 	snake.Draw(brd);
 	goal.Draw(brd);
+	SpriteCodex::DrawBorder(brd, gfx);
 	if (gameIsOver)
 	{
 		SpriteCodex::DrawGameOver(200, 200, gfx);
