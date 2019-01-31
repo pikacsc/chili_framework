@@ -3,6 +3,20 @@
 
 Snake::Snake(const LOCATION & _location)
 {
+	constexpr int nBodyColors = 4;
+	constexpr Color bodyColors[nBodyColors] = 
+	{
+		{10,100,32},
+		{10,130,48},
+		{10,160,48},
+		{10,130,48}
+	};
+
+	for (int i = 0; i < nSegmentsMax; ++i)
+	{
+		segments[i].InitBody(bodyColors[i%nBodyColors]);
+	}
+
 	segments[0].InitHead(_location);
 }
 
@@ -26,7 +40,6 @@ void Snake::Grow()
 {
 	if (nSegments < nSegmentsMax)
 	{
-		segments[nSegments].InitBody();
 		++nSegments;
 	}
 }
@@ -69,9 +82,9 @@ void Snake::Segment::InitHead(const LOCATION & _location)
 	m_color = Snake::headColor;
 }
 
-void Snake::Segment::InitBody()
+void Snake::Segment::InitBody( Color _color)
 {
-	m_color = Snake::bodyColor;
+	m_color = _color;
 }
 
 void Snake::Segment::Follow(const Segment & _next)
