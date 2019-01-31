@@ -86,6 +86,12 @@ void Game::UpdateModel()
 					}
 				}
 			}
+			++snakeSpeedUpCounter;
+			if (snakeSpeedUpCounter >= snakeSpeedUpRate)
+			{
+				snakeSpeedUpCounter = 0;
+				snakeMoveRate = std::max(snakeMoveRate - 1,snakeMoveRateMin);
+			}
 		}
 
 	}
