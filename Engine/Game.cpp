@@ -43,61 +43,75 @@ void Game::Go()
 
 void Game::UpdateModel()
 {
-	if (!gameIsOver)
+	if (gameIsStarted)
 	{
-		if (wnd.kbd.KeyIsPressed(VK_UP))
+		if (!gameIsOver)
 		{
-			delta_loc = { 0,-1 };
-		}
-		else if (wnd.kbd.KeyIsPressed(VK_DOWN))
-		{
-			delta_loc = { 0,1 };
-		}
-		else if (wnd.kbd.KeyIsPressed(VK_LEFT))
-		{
-			delta_loc = { -1,0 };
-		}
-		else if (wnd.kbd.KeyIsPressed(VK_RIGHT))
-		{
-			delta_loc = { 1,0 };
-		}
-		++snakeMoveCounter;
-		if (snakeMoveCounter >= snakeMoveRate)
-		{
-			snakeMoveCounter = 0;
-			const Location next = snake.GetNextHeadLocation(delta_loc);
-			if (!brd.IsInsideBoard(next) || snake.IsInTileExceptEnd(next))
+			if (wnd.kbd.KeyIsPressed(VK_UP))
 			{
-				gameIsOver = true;
+				delta_loc = { 0,-1 };
 			}
-			else
+			else if (wnd.kbd.KeyIsPressed(VK_DOWN))
 			{
-				const bool eating = next == goal.GetLocation();
-				if (eating)
+				delta_loc = { 0,1 };
+			}
+			else if (wnd.kbd.KeyIsPressed(VK_LEFT))
+			{
+				delta_loc = { -1,0 };
+			}
+			else if (wnd.kbd.KeyIsPressed(VK_RIGHT))
+			{
+				delta_loc = { 1,0 };
+			}
+			++snakeMoveCounter;
+			if (snakeMoveCounter >= snakeMoveRate)
+			{
+				snakeMoveCounter = 0;
+				const Location next = snake.GetNextHeadLocation(delta_loc);
+				if (!brd.IsInsideBoard(next) || snake.IsInTileExceptEnd(next))
 				{
-					snake.Grow();
+					gameIsOver = true;
 				}
-				snake.MoveBy(delta_loc);
-				if (eating)
+				else
 				{
-					goal.Respawn(rng, brd, snake);
+					const bool eating = next == goal.GetLocation();
+					if (eating)
+					{
+						snake.Grow();
+					}
+					snake.MoveBy(delta_loc);
+					if (eating)
+					{
+						goal.Respawn(rng, brd, snake);
+					}
 				}
 			}
 		}
+
 	}
-	
+	else
+	{
+		gameIsStarted = wnd.kbd.KeyIsPressed(VK_RETURN);
+	}
 
 }
 
 
 void Game::ComposeFrame()
 {
-	snake.Draw(brd);
-	goal.Draw(brd);
-	SpriteCodex::DrawBorder(brd, gfx);
-	if (gameIsOver)
+	if (gameIsStarted)
 	{
-		SpriteCodex::DrawGameOver(200, 200, gfx);
+		snake.Draw(brd);
+		goal.Draw(brd);
+		//SpriteCodex::DrawBorder(brd, gfx);
+		if (gameIsOver)
+		{
+			SpriteCodex::DrawGameOver(350, 265, gfx);
+		}
+		brd.DrawBorder();
 	}
-	
+	else
+	{
+		SpriteCodex::DrawTitle(290, 225, gfx);
+	}
 }
